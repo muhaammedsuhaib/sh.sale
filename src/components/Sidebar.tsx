@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
-  // Home,
   X,
   Package,
   ShoppingCart,
   Users,
   LineChart,
-  // Settings as SettingsIcon,
   Store,
   Boxes,
 } from "lucide-react";
@@ -34,25 +32,30 @@ type NavItem =
         label: string;
         to: string;
         badge?: number;
+        is_show?: boolean;
       }[];
     };
 
 export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const [activeDropdown, setActiveDropdown] = useState<string>("");
   const [isHovering, setIsHovering] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   const isExpanded = isOpen || isHovering;
 
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
   const navItems: NavItem[] = [
-    // add pos
     {
       title: "Dashboard",
       icon: LineChart,
       hasDropdown: false,
       to: "/dashboard",
-      // badge: 5,
     },
     {
       title: "POS",
@@ -61,49 +64,24 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       to: "/pos",
     },
     {
-      // title: "Orders",
-      // icon: ShoppingCart,
-      // hasDropdown: false,
-      // // dropdownItems: [
-      // //   { label: "All Orders", to: "/orders", badge: 24 },
-      // //   { label: "Pending", to: "/orders/pending", badge: 8 },
-      // //   { label: "Completed", to: "/orders/completed" },
-      // //   { label: "Cancelled", to: "/orders/cancelled" },
-      // // ],
       title: "Orders",
       icon: ShoppingCart,
       hasDropdown: false,
       to: "/orders",
-      // badge: 5,
     },
-    // {
-    //   title: "Customer Management",
-    //   icon: Users,
-    //   hasDropdown: false,
-    //   to: "/customers",
-    // },
     {
       title: "Customers",
       icon: Users,
       hasDropdown: false,
       to: "/customers",
-      // dropdownItems: [
-      //   { label: "Customer List", to: "/customers", badge: 156 },
-      //   { label: "Debt", to: "/customers/debt" },
-      //   // { label: "Segments", to: "/customers/segments" },
-      //   // { label: "Reviews", to: "/customers/reviews" },
-      // ],
     },
-
     {
       title: "Products",
       icon: Package,
       hasDropdown: true,
       dropdownItems: [
-        { label: "All Products", to: "/products", badge: 12 },
-        { label: "Add Product", to: "/products/new" },
-        // { label: "Categories", to: "/products/categories", badge: 3 },
-        // { label: "Inventory", to: "/products/inventory" },
+        { label: "All Products", to: "/products", is_show: true },
+        { label: "Add Product", to: "/products/new", is_show: true },
       ],
     },
     {
@@ -111,22 +89,20 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       icon: Boxes,
       hasDropdown: true,
       dropdownItems: [
-        { label: "All categories", to: "/categories" },
-        { label: "Add category", to: "/category/new" },
-        { label: "", to: "/category/edit" },
+        { label: "All categories", to: "/categories", is_show: true },
+        { label: "Add category", to: "/category/new", is_show: true },
+        {
+          label: "Category edit (hidden)",
+          to: "/category/edit",
+          is_show: false,
+        },
+        {
+          label: "Category view (hidden)",
+          to: "/category/view",
+          is_show: false,
+        },
       ],
     },
-    // {
-    //   title: "Settings",
-    //   icon: SettingsIcon,
-    //   hasDropdown: true,
-    //   dropdownItems: [
-    //     { label: "General", to: "/settings" },
-    //     { label: "Security", to: "/settings/security" },
-    //     { label: "Notifications", to: "/settings/notifications" },
-    //     { label: "Billing", to: "/settings/billing" },
-    //   ],
-    // },
   ];
 
   // Auto-open dropdown that contains current route
@@ -136,7 +112,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         const match = item.dropdownItems.some(
           (dropdownItem) =>
             location.pathname === dropdownItem.to ||
-            location.pathname.startsWith(dropdownItem.to + "/")
+            location.pathname.startsWith(dropdownItem.to + "/"),
         );
         if (match) {
           setActiveDropdown(item.title);
@@ -186,7 +162,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const renderBadge = (count?: number) => {
     if (!count) return null;
     return (
-      <span className="bg-red-500 text-white text-xs rounded-full min-w-5 h-5 flex items-center justify-center px-1.5">
+      <span className="bg-red-500 text-white text-xs rounded-full min-w-5 h-5 flex items-center justify-center px-1.5 transform transition-all duration-200 scale-100 hover:scale-110">
         {count > 99 ? "99+" : count}
       </span>
     );
@@ -196,9 +172,9 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     <>
       {/* Mobile Overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden ${
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-40 bg-black/50 transition-all duration-300 ease-out ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible lg:invisible"
+        } ${isMounted ? "transition-opacity" : ""}`}
         onClick={() => setIsOpen(false)}
       />
 
@@ -206,10 +182,12 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       <aside
         className={`
           fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700
-          transition-all duration-300 ease-in-out
           flex flex-col
           ${isExpanded ? "w-64" : "w-16"}
           ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          transition-all duration-300 ease-out
+          shadow-xl lg:shadow-lg
+          overflow-hidden
         `}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
@@ -217,18 +195,21 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         {/* Header */}
         <div className="shrink-0 p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <div className={`flex items-center transition-all duration-300 `}>
-              <div className="w-8 h-8 bg-linear-to-br from-slate-900 to-blue-900 rounded-lg flex items-center justify-center shadow-sm">
+            <div className={`flex items-center transition-all duration-300`}>
+              <div className="w-8 h-8 bg-linear-to-br from-slate-900 to-blue-900 rounded-lg flex items-center justify-center shadow-sm transform transition-transform duration-200 hover:scale-105">
                 <img
                   src="/brand-images/logo.jpg"
                   alt="SH.SALE"
-                  className="w-6 h-6 rounded"
+                  className="w-6 h-6 rounded transform transition-transform duration-200 hover:rotate-12"
                 />
               </div>
               <h1
-                className={`ml-3 font-bold text-xl text-slate-900 dark:text-white whitespace-nowrap  ${
-                  isExpanded ? "opacity-100" : "opacity-0"
-                }`}
+                className={`
+                  ml-3 font-bold text-xl text-slate-900 dark:text-white whitespace-nowrap 
+                  transition-all duration-300 ease-out
+                  ${isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"}
+                  ${isExpanded ? "delay-150" : "delay-0"}
+                `}
               >
                 SH.SALE
               </h1>
@@ -237,7 +218,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             {isOpen && (
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 transform hover:rotate-90 active:scale-95"
                 aria-label="Toggle sidebar"
               >
                 <X size={20} />
@@ -247,13 +228,13 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-hidden py-4">
-          {navItems.map((item) => {
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 transition-all duration-300">
+          {navItems.map((item, index) => {
             const isActive = item.hasDropdown
               ? item.dropdownItems.some(
                   (dropdownItem) =>
                     location.pathname === dropdownItem.to ||
-                    location.pathname.startsWith(dropdownItem.to + "/")
+                    location.pathname.startsWith(dropdownItem.to + "/"),
                 )
               : location.pathname === item.to ||
                 location.pathname.startsWith(item.to + "/");
@@ -261,16 +242,26 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             const Icon = item.icon;
 
             return (
-              <div key={item.title} className="mb-1">
+              <div
+                key={item.title}
+                className="mb-1"
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                }}
+              >
                 {/* Main Nav Item */}
                 <div
                   className={`
-                    mx-2 rounded-lg transition-all duration-200 cursor-pointer
+                    mx-2 rounded-lg cursor-pointer
+                    transform transition-all duration-200 ease-out
                     ${
                       isActive
                         ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                         : "hover:bg-gray-100 dark:hover:bg-gray-800"
                     }
+                    hover:scale-[1.02] active:scale-[0.98]
+                    ${isExpanded ? "" : "hover:translate-x-1"}
+                    ${isActive ? "shadow-sm" : ""}
                   `}
                 >
                   <div
@@ -278,7 +269,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                     onClick={() => {
                       if (item.hasDropdown && isExpanded) {
                         setActiveDropdown(
-                          activeDropdown === item.title ? "" : item.title
+                          activeDropdown === item.title ? "" : item.title,
                         );
                       } else if (!item.hasDropdown) {
                         handleNavigation(item.to);
@@ -290,21 +281,27 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                     <div className="flex items-center min-w-0">
                       <Icon
                         size={20}
-                        className={`shrink-0 ${
-                          isActive
-                            ? "text-blue-600 dark:text-blue-400"
-                            : "text-gray-600 dark:text-gray-400"
-                        }`}
+                        className={`
+                          shrink-0 transform transition-all duration-200
+                          ${
+                            isActive
+                              ? "text-blue-600 dark:text-blue-400 scale-110"
+                              : "text-gray-600 dark:text-gray-400"
+                          }
+                          group-hover:scale-110
+                        `}
                       />
 
                       <span
                         className={`
-                          ml-3 font-medium whitespace-nowrap transition-all duration-300
+                          ml-3 font-medium whitespace-nowrap
+                          transition-all duration-300 ease-out
                           ${
                             isExpanded
-                              ? "opacity-100 max-w-full"
-                              : "opacity-0 max-w-0"
+                              ? "opacity-100 translate-x-0"
+                              : "opacity-0 -translate-x-4"
                           }
+                          ${isExpanded ? "delay-100" : "delay-0"}
                         `}
                       >
                         {item.title}
@@ -317,9 +314,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                       {item.hasDropdown && isExpanded && (
                         <ChevronDown
                           size={16}
-                          className={`transition-transform duration-200 ${
-                            activeDropdown === item.title ? "rotate-180" : ""
-                          }`}
+                          className={`
+                            transition-all duration-200 ease-out
+                            ${activeDropdown === item.title ? "rotate-180" : ""}
+                            ${isExpanded ? "delay-100" : ""}
+                          `}
                         />
                       )}
                     </div>
@@ -330,60 +329,104 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                 {item.hasDropdown &&
                   isExpanded &&
                   activeDropdown === item.title && (
-                    <div className="mt-1 ml-4 overflow-hidden animate-slideDown">
-                      {item.dropdownItems.map((dropdownItem) => {
-                        const isDropdownItemActive =
-                          location.pathname === dropdownItem.to;
-                        return (
-                          <div
-                            key={dropdownItem.label}
-                            className={`
-                            mx-2 rounded-lg transition-all duration-200 cursor-pointer mb-1
-                            ${
-                              isDropdownItemActive
-                                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                                : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                            }
-                          `}
-                            onClick={() => handleNavigation(dropdownItem.to)}
-                          >
-                            <div className="flex items-center justify-between p-2 pl-8">
-                              <span className="text-sm font-medium whitespace-nowrap">
-                                {dropdownItem.label}
-                              </span>
-                              {renderBadge(dropdownItem.badge)}
+                    <div
+                      className="mt-1 ml-4 overflow-hidden"
+                      style={{
+                        animation: "slideDown 0.3s ease-out",
+                      }}
+                    >
+                      {item.dropdownItems
+                        .filter((dropdownItem) => dropdownItem.is_show)
+                        .map((dropdownItem, dropdownIndex) => {
+                          const isDropdownItemActive =
+                            location.pathname === dropdownItem.to;
+                          return (
+                            <div
+                              key={dropdownItem.label}
+                              className={`
+                              mx-2 rounded-lg cursor-pointer mb-1
+                              transform transition-all duration-200 ease-out
+                              ${
+                                isDropdownItemActive
+                                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                  : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                              }
+                              hover:translate-x-1
+                              hover:scale-[1.01]
+                              opacity-0
+                              animate-fadeInUp
+                            `}
+                              onClick={() => handleNavigation(dropdownItem.to)}
+                              style={{
+                                animationDelay: `${dropdownIndex * 50}ms`,
+                                animationFillMode: "forwards",
+                              }}
+                            >
+                              <div className="flex items-center justify-between p-2 pl-8">
+                                <span className="text-sm font-medium whitespace-nowrap transition-colors duration-200">
+                                  {dropdownItem.label}
+                                </span>
+                                {renderBadge(dropdownItem.badge)}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
                     </div>
                   )}
               </div>
             );
           })}
         </nav>
-
-        {/* User Profile (Optional) */}
-        {/* {isExpanded && (
-          <div className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  U
-                </span>
-              </div>
-              <div className="ml-3 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  User Name
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                  admin@example.com
-                </p>
-              </div>
-            </div>
-          </div>
-        )} */}
       </aside>
+
+      <style>{`
+        @keyframes slideDown {
+          from {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            max-height: 200px;
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out forwards;
+        }
+
+        .animate-fadeInUp {
+          animation: fadeInUp 0.2s ease-out forwards;
+        }
+
+        .animate-slideIn {
+          animation: slideIn 0.3s ease-out forwards;
+        }
+      `}</style>
     </>
   );
 }

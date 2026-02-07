@@ -468,7 +468,7 @@ export default function CategoryNew() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-1xl mx-auto px-4 sm:px-6 py-8">
         <SubHeader
           title="Create New Category"
           description="Add a new product category to organize your inventory"

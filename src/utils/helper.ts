@@ -1,16 +1,15 @@
 // ----------------- Base URLs ----------------- //
 export const API_URL: string =
-  import.meta.env.VITE_API_URL ||
-  "https://sh-store-backend.vercel.app/api";
+  import.meta.env.VITE_API_URL || "https://sh-store-backend.vercel.app/api";
 
 export const BASE_URL: string =
-  import.meta.env.VITE_BASE_URL ||
-  "https://sh-store-backend.vercel.app/";
+  import.meta.env.VITE_BASE_URL || "https://sh-store-backend.vercel.app/";
 
-// ----------------- Token Key ----------------- //
+// -----------------  Key ----------------- //
 export const TOKEN_KEY = "token";
+export const TIMEZONE_KEY = "time_zone";
 
-// ----------------- Token Handlers ----------------- //
+// -----------------  Handlers ----------------- //
 export const setLoginToken = (token: string): void => {
   if (typeof window !== "undefined") {
     localStorage.setItem(TOKEN_KEY, token);
@@ -36,4 +35,20 @@ export const isUserLoggedIn = (): boolean => {
     return !!localStorage.getItem(TOKEN_KEY);
   }
   return false;
+};
+
+export const setTimeZone = (timeZone: string): void => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(TIMEZONE_KEY, timeZone);
+  }
+};
+export const getTimeZone = (): string => {
+  if (typeof window === "undefined") {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  }
+
+  return (
+    localStorage.getItem(TIMEZONE_KEY) ||
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  );
 };

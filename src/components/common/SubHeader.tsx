@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { TruncatedText } from "./TruncatedText";
 
 interface SubHeaderProps {
   // Required
@@ -77,13 +78,18 @@ const SubHeader = ({
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white truncate">
+              <h1
+                className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white truncate"
+                title={title}
+              >
                 {title}
               </h1>
               {description && (
-                <p className="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base max-w-3xl">
-                  {description}
-                </p>
+                <TruncatedText
+                  text={description}
+                  maxLength={500}
+                  className="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base max-w-3xl"
+                />
               )}
             </div>
 
