@@ -114,12 +114,9 @@ export default function CategoryView() {
                         maxLength={100}
                         className="text-lg font-semibold"
                       />
-                      {category.parent?._id && (
+                      {category?.parent?._id && (
                         <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                           Parent ID:{" "}
-                          {/* <span className="font-mono text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
-                            {category.parent._id}
-                          </span> */}
                           <Link
                             to={`/category/view/${category.parent._id}`}
                             className="font-mono text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded

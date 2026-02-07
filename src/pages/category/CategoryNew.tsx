@@ -55,8 +55,6 @@ const useImageManager = () => {
   };
 };
 
-
-
 // Basic Info Section Component
 const BasicInfoSection = ({
   register,
