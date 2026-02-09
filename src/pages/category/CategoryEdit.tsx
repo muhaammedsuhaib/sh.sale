@@ -445,10 +445,10 @@ export default function CategoryEdit() {
         name: category.name || "",
         description: category.description || "",
         images: [],
-        parent: category.parent || null,
+        parent: category?.parent?._id || null,
         is_active: category.is_active ?? true,
       });
-      setSelectedParent(category.parent || null);
+      setSelectedParent(category?.parent?._id || null);
       setExistingImages(category.images || []);
     }
   }, [categoryData?.data, reset, setExistingImages]);
