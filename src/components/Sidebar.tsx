@@ -8,7 +8,7 @@ import {
   Users,
   LineChart,
   Store,
-  Boxes,
+  Folder,
 } from "lucide-react";
 
 type SidebarProps = {
@@ -86,7 +86,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     },
     {
       title: "Categories",
-      icon: Boxes,
+      icon: Folder,
       hasDropdown: true,
       dropdownItems: [
         { label: "All categories", to: "/categories", is_show: true },
