@@ -7,8 +7,8 @@ import {
   ShoppingCart,
   Users,
   LineChart,
-  Store,
   Folder,
+  Tv2,
 } from "lucide-react";
 
 type SidebarProps = {
@@ -59,7 +59,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     },
     {
       title: "POS",
-      icon: Store,
+      icon: Tv2,
       hasDropdown: false,
       to: "/pos",
     },
