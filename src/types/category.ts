@@ -5,6 +5,7 @@ export interface Category {
   images?: string[];
   parent?: string | null;
   shop?: string;
+  branch?: string;
   created_at: string;
   updated_at: string;
   is_active: boolean;

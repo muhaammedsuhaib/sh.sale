@@ -7,6 +7,7 @@ import {
   Calendar,
   Clock,
   FolderUp,
+  User,
 } from "lucide-react";
 import { Button } from "../../components/common/Button";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -51,6 +52,8 @@ export default function CategoryView() {
   const parentCategoryName = category.parent?.name || "None (Main Category)";
   const createdAt = category.created_at;
   const updatedAt = category.updated_at;
+  const createdBy = category.created_by;
+  const updatedBy = category.updated_by;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -179,13 +182,12 @@ export default function CategoryView() {
                   </ExpandableCard>
 
                   {/* Timestamps */}
-
                   <ExpandableCard
                     title="Timestamps"
                     defaultExpanded={true}
                     icon={Calendar}
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {/* Created At */}
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -230,6 +232,44 @@ export default function CategoryView() {
                                 ({formatDateTime(updatedAt, "ago")})
                               </div>
                             </>
+                          ) : (
+                            <span className="text-slate-400 dark:text-slate-500">
+                              N/A
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Created By */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <User className="h-3 w-3 text-slate-400" />
+                          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                            Created By
+                          </span>
+                        </div>
+                        <div className="text-sm text-slate-900 dark:text-white">
+                          {createdBy?.name ? (
+                            <div className="font-medium">{createdBy.name}</div>
+                          ) : (
+                            <span className="text-slate-400 dark:text-slate-500">
+                              N/A
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Updated By */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <User className="h-3 w-3 text-slate-400" />
+                          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                            Updated By
+                          </span>
+                        </div>
+                        <div className="text-sm text-slate-900 dark:text-white">
+                          {updatedBy?.name ? (
+                            <div className="font-medium">{updatedBy.name}</div>
                           ) : (
                             <span className="text-slate-400 dark:text-slate-500">
                               N/A
